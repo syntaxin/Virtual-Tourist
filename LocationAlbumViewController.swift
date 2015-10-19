@@ -21,12 +21,34 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
     override func viewDidLoad() {
         super.viewDidLoad()
         locationMapView.delegate = self
+        self.getPhotosFromFlickr(location)
+        
         
         dispatch_async(dispatch_get_main_queue(), {
             self.locationMapView.addAnnotation(self.location)
         })
     }
 
+//TODO: Use Location to Query Flickr
+    func getPhotosFromFlickr (location: Location){
+    
+        FlickrClient.sharedInstance().getPhotosByLocation(location) { photoProperties, errorString in
+            
+            if errorString != nil {
+
+            } else {
+
+            }
+    
+    }
+    
+}
+}
+//TODO: Convert Flickr Photos to CoreData
+
+    
+    
+    
 // Implement the map
     
 //    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
@@ -65,4 +87,4 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
 //        //TODO: Choose to delete
 //    }
 
-}
+

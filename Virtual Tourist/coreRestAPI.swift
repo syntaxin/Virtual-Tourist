@@ -36,7 +36,7 @@ class coreRestAPI {
                         completionHandler(result: nil, error: error)
                         return
                     }
-                    
+
                     self.parseJSONData(data!, completionHandler: completionHandler)
                 
                 }
@@ -56,9 +56,7 @@ class coreRestAPI {
         do {
             let parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
             completionHandler(result: parsedResult, error: nil)
-
         } catch {
-            
             completionHandler(result: nil, error: NSError(domain: ErrorMessage.domain, code: 1, userInfo: [NSLocalizedDescriptionKey : ErrorMessage.jsonParseFailed]))
         }
     }

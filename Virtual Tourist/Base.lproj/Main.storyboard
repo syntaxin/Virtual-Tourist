@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="3sA-py-2Tz">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Navigation Controller-->
@@ -59,6 +60,41 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="305" y="389"/>
+        </scene>
+        <!--Location Album View Controller-->
+        <scene sceneID="Axw-xw-izN">
+            <objects>
+                <viewController storyboardIdentifier="LocationAlbum" id="1JN-dl-QuO" customClass="LocationAlbumViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Qe4-iy-ZLe"/>
+                        <viewControllerLayoutGuide type="bottom" id="7qr-31-wbO"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="fgw-Da-5lE">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="46W-0l-lVf">
+                                <rect key="frame" x="0.0" y="159" width="600" height="200"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="1tB-Q9-YqT"/>
+                                    <constraint firstAttribute="width" constant="600" id="Rc9-tI-MA5"/>
+                                </constraints>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="7qr-31-wbO" firstAttribute="top" secondItem="46W-0l-lVf" secondAttribute="bottom" constant="241" id="T5z-8d-sGn"/>
+                            <constraint firstItem="46W-0l-lVf" firstAttribute="top" secondItem="Qe4-iy-ZLe" secondAttribute="bottom" constant="139" id="fkd-Uw-Qzc"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="46W-0l-lVf" secondAttribute="trailing" constant="-20" id="wda-J0-wWm"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="locationMapView" destination="46W-0l-lVf" id="1VD-7A-zn3"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wbC-aX-Xhx" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="974" y="389"/>
         </scene>
     </scenes>
 </document>

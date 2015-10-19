@@ -122,9 +122,19 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
         } else {
             self.isEditMode = false
             self.addLongPressGestureRecognizer()
-            dispatch_async(dispatch_get_main_queue(), {
-            self.editButton.title  = "Edit"
+    
+            let locations = fetchAllLocations()
+            if locations.count > 0 {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.editButton.title  = "Edit"
             })
+            } else {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.editButton.title  = "Edit"
+                    self.editButton.enabled = false
+                })
+            
+            }
             
             
         }
@@ -147,13 +157,17 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
 
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
-        //TODO: Go to Album View
         let location = view.annotation as! Location
         
         if isEditMode == true {
             deleteLocation(location)
+        } else {
+            dispatch_async(dispatch_get_main_queue(),{
+                let controller = self.storyboard!.instantiateViewControllerWithIdentifier("LocationAlbum") as! LocationAlbumViewController
+                controller.location = location
+                self.navigationController!.pushViewController(controller, animated: true)
+            })
         }
-
     }
 }
 

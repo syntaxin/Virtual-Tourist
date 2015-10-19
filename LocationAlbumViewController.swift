@@ -13,7 +13,7 @@ import MapKit
 class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
 //UICollectionViewDataSource, UICollectionViewDelegate
     
-    var location: MKPointAnnotation!
+    var location: Location!
     
     @IBOutlet weak var locationMapView: MKMapView!
     //@IBOutlet weak var albumCollection: UICollectionView!

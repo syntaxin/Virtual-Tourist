@@ -12,15 +12,21 @@ import CoreData
 
 class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMapViewDelegate {
 
+    //MARK: Create needed elements and variables
+    
     @IBOutlet weak var touristMapView: MKMapView!
     @IBOutlet weak var editButton: UIBarButtonItem!
     var isEditMode = false
+    var longPressGestureRecognizer: UILongPressGestureRecognizer!
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
        
         touristMapView.delegate = self
+        
         self.addLongPressGestureRecognizer()
+        
         editButton.title = "Edit"
         editButton.enabled = false
         
@@ -41,8 +47,6 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
     
     
     //MARK: CoreData Capabilities
-
-    
     var sharedContext: NSManagedObjectContext {
         return CoreDataStackManager.sharedInstance().managedObjectContext
     }
@@ -60,37 +64,43 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
         }
     }
     
-    //MARK: Create gesture recognizers and behaviors
+    //MARK: Manage gesture recognizers
     
     func addLongPressGestureRecognizer(){
-        let lgpr = UILongPressGestureRecognizer(target:self, action: "handleLongPress:")
-        lgpr.minimumPressDuration = 0.5
-        lgpr.delaysTouchesBegan = true
-        lgpr.delegate = self
-        self.touristMapView.addGestureRecognizer(lgpr)
+        longPressGestureRecognizer = UILongPressGestureRecognizer(target:self, action: "addLocation:")
+        longPressGestureRecognizer.minimumPressDuration = 0.5
+        longPressGestureRecognizer.delaysTouchesBegan = true
+        longPressGestureRecognizer.delegate = self
+        self.touristMapView.addGestureRecognizer(longPressGestureRecognizer)
     }
     
-    //Handle the Long Press once identified
-    func handleLongPress (gestureReconizer: UILongPressGestureRecognizer){
-        
+    func removeLongPressGestureRecognizer() {
+        self.touristMapView.removeGestureRecognizer(longPressGestureRecognizer)
+    }
+    
+    
+    //MARK: Handle gestures and actions
+    func addLocation (gestureReconizer: UILongPressGestureRecognizer){
         if gestureReconizer.state != UIGestureRecognizerState.Ended {
             return
         }
         
         let touchLocation = gestureReconizer.locationInView(touristMapView)
         let touchCoordinate = touristMapView.convertPoint(touchLocation, toCoordinateFromView:touristMapView)
-        
         let location = Location(latitude: touchCoordinate.latitude, longitude: touchCoordinate.longitude, context: self.sharedContext)
-        
+
         print(location.latitude)
-        
+        editButton.enabled = true
         CoreDataStackManager.sharedInstance().saveContext()
         
         dispatch_async(dispatch_get_main_queue(), {
             self.touristMapView.addAnnotation(location)
         })
+        
+        
+        //TODO: Get Photos Up front
     }
-    
+        
     func deleteLocation(location: Location) {
         touristMapView.removeAnnotation(location)
         sharedContext.deleteObject(location)
@@ -105,16 +115,18 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
         //print(isEditMode.boolValue)
         if isEditMode == false {
             self.isEditMode = true
-            
+            self.removeLongPressGestureRecognizer()
             dispatch_async(dispatch_get_main_queue(), {
             self.editButton.title = "Done"
             })
         } else {
-            
             self.isEditMode = false
+            self.addLongPressGestureRecognizer()
             dispatch_async(dispatch_get_main_queue(), {
             self.editButton.title  = "Edit"
             })
+            
+            
         }
         
     }
@@ -136,6 +148,11 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
         //TODO: Go to Album View
+        let location = view.annotation as! Location
+        
+        if isEditMode == true {
+            deleteLocation(location)
+        }
 
     }
 }

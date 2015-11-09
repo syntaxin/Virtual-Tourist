@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="3sA-py-2Tz">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="3sA-py-2Tz">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <scenes>
         <!--Navigation Controller-->
@@ -74,18 +73,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="46W-0l-lVf">
-                                <rect key="frame" x="0.0" y="159" width="600" height="200"/>
+                                <rect key="frame" x="200" y="200" width="200" height="200"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="1tB-Q9-YqT"/>
-                                    <constraint firstAttribute="width" constant="600" id="Rc9-tI-MA5"/>
+                                    <constraint firstAttribute="height" constant="200" id="0Xu-sN-sUk"/>
+                                    <constraint firstAttribute="width" constant="200" id="bxT-Yv-Mf0"/>
                                 </constraints>
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="7qr-31-wbO" firstAttribute="top" secondItem="46W-0l-lVf" secondAttribute="bottom" constant="241" id="T5z-8d-sGn"/>
-                            <constraint firstItem="46W-0l-lVf" firstAttribute="top" secondItem="Qe4-iy-ZLe" secondAttribute="bottom" constant="139" id="fkd-Uw-Qzc"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="46W-0l-lVf" secondAttribute="trailing" constant="-20" id="wda-J0-wWm"/>
+                            <constraint firstItem="46W-0l-lVf" firstAttribute="centerX" secondItem="fgw-Da-5lE" secondAttribute="centerX" id="VGl-ZN-EUP"/>
+                            <constraint firstItem="46W-0l-lVf" firstAttribute="centerY" secondItem="fgw-Da-5lE" secondAttribute="centerY" id="gps-9E-ffp"/>
                         </constraints>
                     </view>
                     <connections>

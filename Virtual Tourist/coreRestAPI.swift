@@ -13,12 +13,13 @@ class coreRestAPI {
 
     
     /* Standardized Error Messages for the App */
-    private struct ErrorMessage {
+    struct ErrorMessage {
         static let domain = "Virtual Tourist"
         static let offline = "You need to be online"
         static let invalidURL = "Invalid URL"
         static let emptyURL = "Empty URL"
         static let jsonParseFailed = "Could not understand what Flickr told me"
+        static let noImage = "Couldn't find the image"
     }
     
     
@@ -33,12 +34,12 @@ class coreRestAPI {
                 let task = session.dataTaskWithRequest(request) { data, response, error in
                     
                     if error != nil {
-                        completionHandler(result: nil, error: error)
+                        completionHandler(result: nil, error: NSError(domain: ErrorMessage.domain, code: 1, userInfo: [NSLocalizedDescriptionKey : ErrorMessage.invalidURL]))
                         return
                     }
-
+                    
                     self.parseJSONData(data!, completionHandler: completionHandler)
-                
+                    
                 }
                 task.resume()
             } else {

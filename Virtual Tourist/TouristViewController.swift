@@ -19,7 +19,7 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
     var isEditMode = false
     var longPressGestureRecognizer: UILongPressGestureRecognizer!
 
-    
+    //MARK: Prepare view and get core data   
     override func viewDidLoad() {
         super.viewDidLoad()
        
@@ -30,7 +30,6 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
         editButton.title = "Edit"
         editButton.enabled = false
         
-        // CoreData
         let locations = fetchAllLocations()
         if !locations.isEmpty {
             

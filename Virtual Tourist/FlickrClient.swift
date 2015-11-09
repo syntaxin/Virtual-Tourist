@@ -10,7 +10,14 @@ import Foundation
 import MapKit
 
 class FlickrClient : coreRestAPI {
-
+    
+    var session: NSURLSession
+    
+    override init() {
+        session = NSURLSession.sharedSession()
+        super.init()
+    }
+    
     class func sharedInstance() -> FlickrClient {
         
         struct Singleton {
@@ -18,8 +25,10 @@ class FlickrClient : coreRestAPI {
         }
         return Singleton.sharedInstance
     }
+
+    // MARK: Get Photos from Flickr by Location
     
-    func getPhotosByLocation(location:Location, completionHandler: (photoProperties: [[String:String]]?, errorString: String?) -> Void) {
+    func getPhotosByLocation(location:Location, completionHandler: (photoResults: AnyObject!, errorString: String?) -> Void) {
         
         let bBox = getBoundingBoxParams(location)
         
@@ -37,13 +46,18 @@ class FlickrClient : coreRestAPI {
         coreRestAPI.httpGet(url) { result, NSError in
             
             if result == nil {
-                    //completionHandler(photoProperties: nil, errorString: error?.localizedDescription)
-            } else{
-                    print(result)
+                completionHandler(photoResults: nil, errorString: NSError!.localizedDescription)
+            } else {
+                
+                completionHandler(photoResults: result, errorString: nil)
+
+                
             }
-        
+            
         }
     }
+    
+// MARK: Helper functions for Flickr
     
     func getBoundingBoxParams (location:Location) -> String {
         
@@ -54,6 +68,31 @@ class FlickrClient : coreRestAPI {
         
         return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
     }
-
     
+    
+    func taskForImage(filePath: String, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask {
+        
+        let url = NSURL(string: filePath)
+        
+        let request = NSURLRequest(URL: url!)
+        
+        let task = session.dataTaskWithRequest(request) {data, response, downloadError in
+            
+            if let _ = downloadError {
+                completionHandler(imageData: nil, error: NSError(domain: ErrorMessage.domain, code: 1, userInfo: [NSLocalizedDescriptionKey : ErrorMessage.noImage]))
+            } else {
+                completionHandler(imageData: data, error: nil)
+            }
+        }
+        
+        task.resume()
+        
+        return task
+    }
+    
+    // MARK: - Shared Image Cache stoled from Favorite Actors
+    
+    struct Caches {
+        static let imageCache = ImageCache()
+    }
 }

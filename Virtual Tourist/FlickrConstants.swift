@@ -24,9 +24,7 @@ extension FlickrClient {
         static let longMax = 180.0
         static let photosPerPage = 24
         static let nojsoncallback = 1
-        
-        static let EXTRAS = "url_m"
-        static let SAFE_SEARCH = "1"
+        static let photoSize = "q"
 
         
     
@@ -37,5 +35,22 @@ extension FlickrClient {
     
     }
 
-
+    struct JSONResponseKeys {
+        
+        // PhotoSearchResults
+        static let farmID = "farm"
+        static let photoID = "id"
+        static let secretID = "secret"
+        static let serverID = "server"
+        static let title = "title"
+        
+        
+    }
+    
+    struct imageURL {
+        static let base = "https://farm"
+        static let partTwo = ".staticflickr.com/"
+        static let partThree = "/"
+        static let defaultImage = "URL"
+    }
 }

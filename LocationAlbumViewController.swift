@@ -44,8 +44,12 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
     
     // MARK: Core Data Capabilites
     
-    var sharedContext: NSManagedObjectContext {
+    lazy var sharedContext: NSManagedObjectContext =  {
         return CoreDataStackManager.sharedInstance().managedObjectContext
+    }()
+    
+    func saveContext() {
+        CoreDataStackManager.sharedInstance().saveContext()
     }
     
     func fetchAllPictures() -> [Photo] {

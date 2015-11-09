@@ -23,17 +23,21 @@ class Photo: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
 }
 
-
+// initializer
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
+
         let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
+        
+        // superclass init
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
+        //set parameters of the photo object
         self.imageName = (dictionary[FlickrClient.JSONResponseKeys.photoID] as! String?)! + "_" + (dictionary[FlickrClient.JSONResponseKeys.secretID] as! String?)! + "_" + FlickrClient.Constants.photoSize + ".jpg"
-        //print(self.imageName)
+        print(self.imageName)
         self.baseUrl = FlickrClient.imageURL.base + String(dictionary[FlickrClient.JSONResponseKeys.farmID]) + FlickrClient.imageURL.partTwo + (dictionary[FlickrClient.JSONResponseKeys.serverID] as! String?)! + "/"
-         //print(self.baseUrl)
+         print(self.baseUrl)
         self.imageLink = self.baseUrl! + self.imageName!
-         //print(self.imageLink)
+         print(self.imageLink)
 
     }
 

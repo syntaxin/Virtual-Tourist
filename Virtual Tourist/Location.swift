@@ -15,6 +15,7 @@ class Location : NSManagedObject, MKAnnotation {
     //managed variables
     @NSManaged var latitude: NSNumber
     @NSManaged var longitude: NSNumber
+    @NSManaged var photos: [Photo]
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -33,7 +34,7 @@ class Location : NSManagedObject, MKAnnotation {
         self.longitude = NSNumber(double: longitude)
 
     }
-    
+    // make this an Annotation as well
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude as Double, longitude: longitude as Double)
     }

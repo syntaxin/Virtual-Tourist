@@ -11,7 +11,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
+class LocationAlbumViewController : UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate  {
     //UICollectionViewDataSource, UICollectionViewDelegate
     
     // MARK: Prepare view and get Core Data
@@ -29,19 +29,56 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
         })
         
         
-        let photos = fetchAllPictures()
+        // Step 2: Perform the fetch
         
-        if photos.count == 0 {
-            self.getPhotosFromFlickr(location)
-            print("Got " + String(photos.count) + "now")
-            //let photos = fetchAllPictures()
-            //print(photos)
-        } else {
-            print("I have photos")
-        }
+        do {
+            try fetchedResultsController.performFetch()
+            print (location.photos.count)
+        } catch {}
+        
+        // Step 6: Set the delegate to this view controller
+        // Set the view controller as the delegate
+        
+        fetchedResultsController.delegate = self
         
         
     }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if location.photos.isEmpty {
+            
+            FlickrClient.sharedInstance().getPhotosByLocation(location) { photoResults, errorString in
+                
+                if let error = errorString {
+                    
+                    print(error)
+                    
+                } else {
+                    
+                    if let photosDictionary = photoResults.valueForKey("photos") as? [String:AnyObject],
+                        let photosInDictionary = photosDictionary["photo"] as? [[String: AnyObject]]
+                        
+                    {
+                        
+                        _ = photosInDictionary.map() { (dictionary: [String: AnyObject]) -> Photo in
+                            let photo = Photo(dictionary: dictionary, context: self.sharedContext)
+                            photo.location = self.location
+                            return photo
+                            
+                        }
+                        self.saveContext()
+                    } else {
+                        
+                        print("Could not get photos from Flickr")
+                    }
+                }
+            }
+        }
+    }
+    
+    
     
     // MARK: Core Data Capabilites
     
@@ -53,56 +90,21 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
-    func fetchAllPictures() -> [Photo] {
-                let fetchRequest = NSFetchRequest()
+    lazy var fetchedResultsController: NSFetchedResultsController = {
         
-                fetchRequest.entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: sharedContext)
-                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imageName", ascending: true)]
-                fetchRequest.predicate = NSPredicate(format: "location == %@", self.location);
+        let fetchRequest = NSFetchRequest(entityName: "Photo")
         
-                do {
-                    let results = try sharedContext.executeFetchRequest(fetchRequest)
-                    print("photos from CoreData")
-                    return results as! [Photo]
-                } catch {
-                    print("nothing")
-                    return [Photo]()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imageName", ascending: true)]
+        fetchRequest.predicate = NSPredicate(format: "location == %@", self.location);
         
-                }
-    }
-    
-    
-    //MARK: Use Location to Query Flickr
-    func getPhotosFromFlickr (location: Location){
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+            managedObjectContext: self.sharedContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
         
-        FlickrClient.sharedInstance().getPhotosByLocation(location) { photoResults, errorString in
-            
-            if let error = errorString {
-                
-                print(error)
-                
-            } else {
-                
-                if let photosDictionary = photoResults.valueForKey("photos") as? [String:AnyObject],
-                    let photosInDictionary = photosDictionary["photo"] as? [[String: AnyObject]]
-                    
-                {
-                    
-                        _ = photosInDictionary.map() { (dictionary: [String: AnyObject]) -> Photo in
-                            let photo = Photo(dictionary: dictionary, context: self.sharedContext)
-                            photo.location = self.location
-                            //print(photo)
-                            return photo
-
-                    }
-                    //CoreDataStackManager.sharedInstance().saveContext()
-                } else {
-                
-                    print("still not working")
-                }
-            }
-        }
-    }
+        return fetchedResultsController
+        
+    }()
 }
 
 
@@ -130,4 +132,38 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
 //        //TODO: Choose to delete
 //    }
 
-
+//
+//            let resource = TheMovieDB.Resources.PersonIDMovieCredits
+//            let parameters = [TheMovieDB.Keys.ID : actor.id]
+//
+//            TheMovieDB.sharedInstance().taskForResource(resource, parameters: parameters){ JSONResult, error  in
+//                if let error = error {
+//                    print(error)
+//                } else {
+//
+//                    print(JSONResult)
+//                    if let moviesDictionaries = JSONResult.valueForKey("cast") as? [[String : AnyObject]] {
+//
+//                        // Parse the array of movies dictionaries
+//                        let _ = moviesDictionaries.map() { (dictionary: [String : AnyObject]) -> Movie in
+//                            let movie = Movie(dictionary: dictionary, context: self.sharedContext)
+//
+//                            movie.actor = self.actor
+//
+//                            return movie
+//                        }
+//
+//                        // Update the table on the main thread
+//                        dispatch_async(dispatch_get_main_queue()) {
+//                            self.tableView.reloadData()
+//                        }
+//
+//                        // Save the context
+//                        self.saveContext()
+//
+//                    } else {
+//                        let error = NSError(domain: "Movie for Person Parsing. Cant find cast in \(JSONResult)", code: 0, userInfo: nil)
+//                        print(error)
+//                    }
+//                }
+//            }

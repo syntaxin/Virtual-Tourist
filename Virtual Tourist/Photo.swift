@@ -33,29 +33,29 @@ class Photo: NSManagedObject {
         
         //set parameters of the photo object
         self.imageName = (dictionary[FlickrClient.JSONResponseKeys.photoID] as! String?)! + "_" + (dictionary[FlickrClient.JSONResponseKeys.secretID] as! String?)! + "_" + FlickrClient.Constants.photoSize + ".jpg"
-        print(self.imageName)
+        //print(self.imageName)
         self.baseUrl = FlickrClient.imageURL.base + String(dictionary[FlickrClient.JSONResponseKeys.farmID]) + FlickrClient.imageURL.partTwo + (dictionary[FlickrClient.JSONResponseKeys.serverID] as! String?)! + "/"
-         print(self.baseUrl)
+        //print(self.baseUrl)
         self.imageLink = self.baseUrl! + self.imageName!
-         print(self.imageLink)
+        //print(self.imageLink)
 
     }
 
     
-    var image: UIImage? {
-        
-        get {
-            return FlickrClient.Caches.imageCache.imageWithIdentifier(imageName)
-        }
-        
-        set {
-            FlickrClient.Caches.imageCache.storeImage(newValue, withIdentifier: imageName!)
-        }
-    }
-    
-    override func prepareForDeletion() {
-        super.prepareForDeletion()
-        image = nil
-    }
+//    var image: UIImage? {
+//        
+//        get {
+//            return FlickrClient.Caches.imageCache.imageWithIdentifier(imageName)
+//        }
+//        
+//        set {
+//            FlickrClient.Caches.imageCache.storeImage(newValue, withIdentifier: imageName!)
+//        }
+//    }
+//    
+//    override func prepareForDeletion() {
+//        super.prepareForDeletion()
+//        image = nil
+//    }
 }
 

@@ -30,11 +30,12 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
         
         
         let photos = fetchAllPictures()
+        
         if photos.count == 0 {
             self.getPhotosFromFlickr(location)
-            print("Got them now")
-            let photos = fetchAllPictures()
-            print(photos)
+            print("Got " + String(photos.count) + "now")
+            //let photos = fetchAllPictures()
+            //print(photos)
         } else {
             print("I have photos")
         }
@@ -53,23 +54,21 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
     }
     
     func fetchAllPictures() -> [Photo] {
-        //        let fetchRequest = NSFetchRequest()
-        //
-        //        fetchRequest.entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: sharedContext)
-        //        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imageName", ascending: true)]
-        //        fetchRequest.predicate = NSPredicate(format: "location == %@", self.location);
-        //
-        //        do {
-        //            let results = try sharedContext.executeFetchRequest(fetchRequest)
-        //            print([results])
-        //            return results as! [Photo]
-        //        } catch {
-        //            print("nothing")
-        //            return [Photo]()
-        //
-        //        }
-        //TODO: Fetch Request for Photos
-        return [Photo]()
+                let fetchRequest = NSFetchRequest()
+        
+                fetchRequest.entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: sharedContext)
+                fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imageName", ascending: true)]
+                fetchRequest.predicate = NSPredicate(format: "location == %@", self.location);
+        
+                do {
+                    let results = try sharedContext.executeFetchRequest(fetchRequest)
+                    print("photos from CoreData")
+                    return results as! [Photo]
+                } catch {
+                    print("nothing")
+                    return [Photo]()
+        
+                }
     }
     
     
@@ -92,7 +91,7 @@ class LocationAlbumViewController : UIViewController, MKMapViewDelegate  {
                         _ = photosInDictionary.map() { (dictionary: [String: AnyObject]) -> Photo in
                             let photo = Photo(dictionary: dictionary, context: self.sharedContext)
                             photo.location = self.location
-                            print(photo)
+                            //print(photo)
                             return photo
 
                     }

@@ -95,7 +95,7 @@
                                 </constraints>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Yde-A1-fxw">
-                                <rect key="frame" x="0.0" y="164" width="600" height="436"/>
+                                <rect key="frame" x="0.0" y="164" width="600" height="386"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="EFs-Yg-NuK">
                                     <size key="itemSize" width="100" height="100"/>
@@ -135,21 +135,35 @@
                                     <outlet property="delegate" destination="1JN-dl-QuO" id="zkW-Ua-7JU"/>
                                 </connections>
                             </collectionView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qwd-6W-M9i">
+                                <rect key="frame" x="0.0" y="550" width="600" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="zzJ-eD-JRB"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="deleteButtonClick:" destination="1JN-dl-QuO" eventType="touchUpInside" id="MdN-qc-SW9"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Yde-A1-fxw" firstAttribute="top" secondItem="46W-0l-lVf" secondAttribute="bottom" id="1ga-D1-IPG"/>
+                            <constraint firstItem="qwd-6W-M9i" firstAttribute="width" secondItem="fgw-Da-5lE" secondAttribute="width" id="3aH-jN-U28"/>
+                            <constraint firstItem="qwd-6W-M9i" firstAttribute="top" secondItem="Yde-A1-fxw" secondAttribute="bottom" id="9Gl-gb-drl"/>
                             <constraint firstItem="46W-0l-lVf" firstAttribute="width" secondItem="fgw-Da-5lE" secondAttribute="width" id="9Jj-Hf-4Yv"/>
                             <constraint firstItem="Yde-A1-fxw" firstAttribute="width" secondItem="fgw-Da-5lE" secondAttribute="width" id="H0o-Go-px9"/>
                             <constraint firstItem="46W-0l-lVf" firstAttribute="centerX" secondItem="fgw-Da-5lE" secondAttribute="centerX" id="LnK-b9-jYg"/>
                             <constraint firstItem="46W-0l-lVf" firstAttribute="top" secondItem="Qe4-iy-ZLe" secondAttribute="bottom" id="TWA-QP-YYZ"/>
-                            <constraint firstItem="7qr-31-wbO" firstAttribute="top" secondItem="Yde-A1-fxw" secondAttribute="bottom" id="g76-7n-Lhp"/>
+                            <constraint firstItem="7qr-31-wbO" firstAttribute="top" secondItem="qwd-6W-M9i" secondAttribute="bottom" id="eW5-Ow-frg"/>
                             <constraint firstItem="Yde-A1-fxw" firstAttribute="centerX" secondItem="fgw-Da-5lE" secondAttribute="centerX" id="som-9Y-wic"/>
+                            <constraint firstItem="qwd-6W-M9i" firstAttribute="centerX" secondItem="fgw-Da-5lE" secondAttribute="centerX" id="wXJ-FI-aQv"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Ejb-gX-Dne"/>
                     <connections>
                         <outlet property="collectionView" destination="Yde-A1-fxw" id="Czw-MD-eu1"/>
+                        <outlet property="deleteButton" destination="qwd-6W-M9i" id="z7F-2x-gVP"/>
                         <outlet property="locationMapView" destination="46W-0l-lVf" id="1VD-7A-zn3"/>
                     </connections>
                 </viewController>

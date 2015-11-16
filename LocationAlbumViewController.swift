@@ -25,15 +25,19 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
     
     @IBOutlet weak var locationMapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var deleteButton: UIButton!
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        selectedIndexes = [NSIndexPath]()
         locationMapView.delegate = self
         
-        dispatch_async(dispatch_get_main_queue(), {
-            self.locationMapView.addAnnotation(self.location)
-        })
+        self.addLocation()
+        
+        updateDeleteButton()
+
         
         
         // Step 2: Perform the fetch
@@ -57,47 +61,99 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         super.viewWillAppear(animated)
         
         if location.photos.isEmpty {
-            
-            FlickrClient.sharedInstance().getPhotosByLocation(location) { photoResults, errorString in
-                
-                if let error = errorString {
-                    
-                    print(error)
-                    
-                } else {
-                    self.sharedContext.performBlockAndWait(
-                        {
-                            
-                            if let photosDictionary = photoResults.valueForKey("photos") as? [String:AnyObject],
-                                let photosInDictionary = photosDictionary["photo"] as? [[String: AnyObject]]
-                                
-                            {
-                                
-                                
-                                //print(photosDictionary)
-                                _ = photosInDictionary.map() { (dictionary: [String: AnyObject]) -> Photo in
-                                    let photo = Photo(dictionary: dictionary, context: self.sharedContext)
-                                    photo.location = self.location
-                                    return photo
-                                    
-                                }
-                                
-                                //Update the table on the main thread
-                                dispatch_async(dispatch_get_main_queue()) {
-                                    self.collectionView.reloadData()
-                                }
-                                
-                                self.saveContext()
-                            } else {
-                                
-                                print("Could not get photos from Flickr")
-                            }
-                    }
-                )}
-            }
+            getPhotosFromFlickr()
         }
     }
     
+    //MARK: Delete actions
+    @IBAction func deleteButtonClick(sender: AnyObject) {
+    
+        if selectedIndexes.count > 0 {
+            deleteSelectedPhotos()
+        } else {
+            deleteAllPhotos()
+
+        }
+    
+    }
+    
+    private func deleteSelectedPhotos(){
+        
+        var selectedPhotos = [Photo]()
+        
+        for indexPath in selectedIndexes {
+            selectedPhotos.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
+        }
+        
+        for photo in selectedPhotos {
+            self.sharedContext.deleteObject(photo)
+        }
+        
+        selectedIndexes = [NSIndexPath]()
+        updateDeleteButton()
+        
+        self.saveContext()
+        
+        if fetchedResultsController.fetchedObjects!.count == 0 {
+            getPhotosFromFlickr()
+        }
+        
+    }
+    
+    private func deleteAllPhotos(){
+        
+        for photo in fetchedResultsController.fetchedObjects as! [Photo] {
+            sharedContext.deleteObject(photo)
+        }
+        
+        self.saveContext()
+        
+        getPhotosFromFlickr()
+
+    }
+    
+    //MARK: Get Photos from Flickr
+    private func getPhotosFromFlickr (){
+    
+        FlickrClient.sharedInstance().getPhotosByLocation(location) { photoResults, errorString in
+            
+            if let error = errorString {
+                
+                print(error)
+                
+            } else {
+                self.sharedContext.performBlockAndWait(
+                    {
+                        
+                        if let photosDictionary = photoResults.valueForKey("photos") as? [String:AnyObject],
+                            let photosInDictionary = photosDictionary["photo"] as? [[String: AnyObject]]
+                            
+                        {
+                            
+                            
+                            //print(photosDictionary)
+                            _ = photosInDictionary.map() { (dictionary: [String: AnyObject]) -> Photo in
+                                let photo = Photo(dictionary: dictionary, context: self.sharedContext)
+                                photo.location = self.location
+                                return photo
+                                
+                            }
+                            
+                            //Update the table on the main thread
+                            dispatch_async(dispatch_get_main_queue()) {
+                                self.collectionView.reloadData()
+                            }
+                            
+                            self.saveContext()
+                        } else {
+                            
+                            print("Could not get photos from Flickr")
+                        }
+                    }
+                )}
+        }
+    
+    }
     
     
     // MARK: Core Data Capabilites
@@ -126,6 +182,50 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         
     }()
     
+    // MARK: - Fetched Results Controller Delegate
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        
+        insertedIndexPaths = [NSIndexPath]()
+        deletedIndexPaths = [NSIndexPath]()
+        updatedIndexPaths = [NSIndexPath]()
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+            
+            switch type {
+            
+            case .Insert:
+                insertedIndexPaths.append(newIndexPath!)
+                break
+            case .Delete:
+                deletedIndexPaths.append(indexPath!)
+                break
+            case .Update:
+                updatedIndexPaths.append(indexPath!)
+                break
+            default:
+                break
+            }
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+       
+        collectionView.performBatchUpdates ({() -> Void in
+            
+            for indexPath in self.insertedIndexPaths {
+                self.collectionView.insertItemsAtIndexPaths([indexPath])
+            }
+            
+            for indexPath in self.deletedIndexPaths {
+                self.collectionView.deleteItemsAtIndexPaths([indexPath])
+            }
+            for indexPath in self.updatedIndexPaths {
+                self.collectionView.reloadItemsAtIndexPaths([indexPath])
+            }
+            
+            }, completion: nil)
+    }
+    
     //MARK:Implement the Collection View
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
@@ -139,7 +239,7 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(CellIdentifier, forIndexPath: indexPath) as! LocationAlbumViewCell
         
-        configureCell(cell, photo: photo)
+        configureCell(cell, photo: photo, indexPath: indexPath)
         
         return cell
         
@@ -151,19 +251,32 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         
         if let index = selectedIndexes.indexOf(indexPath) {
             selectedIndexes.removeAtIndex(index)
+            dispatch_async(dispatch_get_main_queue()){
             cell.locationPhotoView.alpha = 1.0
+            }
         } else {
             selectedIndexes.append(indexPath)
-            cell.locationPhotoView.alpha = 0.5
+            
+            dispatch_async(dispatch_get_main_queue()){
+            cell.locationPhotoView.alpha = 0.25
+            }
         }
+        
+        updateDeleteButton()
         
     }
     
-    func configureCell(cell: LocationAlbumViewCell, photo: Photo) {
+    func configureCell(cell: LocationAlbumViewCell, photo: Photo, indexPath: NSIndexPath) {
         
         var locationPhoto = UIImage(named: "photoPlaceholder")
         
         cell.locationPhotoView.image = nil
+       
+        if selectedIndexes.contains(indexPath) {
+            cell.locationPhotoView.alpha = 0.25
+        } else {
+            cell.locationPhotoView.alpha = 1.0
+        }
         
         //Set the Location Photo Image
         
@@ -207,50 +320,44 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         cell.locationPhotoView.image = locationPhoto
     }
     
-    // MARK: - Fetched Results Controller Delegate
-    
-
-    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+    //MARK: MKMapViewController
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
-        insertedIndexPaths = [NSIndexPath]()
-        deletedIndexPaths = [NSIndexPath]()
-        updatedIndexPaths = [NSIndexPath]()
-    }
-    
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-            
-            switch type {
-            
-            case .Insert:
-                insertedIndexPaths.append(newIndexPath!)
-                break
-            case .Delete:
-                deletedIndexPaths.append(indexPath!)
-                break
-            case .Update:
-                updatedIndexPaths.append(indexPath!)
-                break
-            default:
-                break
-            }
-    }
-    
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
-       
-        collectionView.performBatchUpdates ({() -> Void in
-            
-            for indexPath in self.insertedIndexPaths {
-                self.collectionView.insertItemsAtIndexPaths([indexPath])
-            }
-            
-            for indexPath in self.deletedIndexPaths {
-                self.collectionView.deleteItemsAtIndexPaths([indexPath])
-            }
-            for indexPath in self.updatedIndexPaths {
-                self.collectionView.reloadItemsAtIndexPaths([indexPath])
-            }
-            
-            }, completion: nil)
-    }
+        let reuseId = "pin"
+        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
+        pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+        
+        pinView?.canShowCallout = false
+        pinView?.pinTintColor = UIColor.blueColor()
 
+        
+        return pinView
+    }
+    
+    //Add Location on the MapView
+    private func addLocation() {
+        
+        if let location = location {
+            
+            let span = MKCoordinateSpanMake(0.25,0.25)
+            let region = MKCoordinateRegion(center:location.coordinate, span:span)
+            
+            locationMapView.region = region
+            locationMapView.userInteractionEnabled = false
+            locationMapView.addAnnotation(location)
+            
+            
+        }
+    
+    }
+    
+    private func updateDeleteButton() {
+        
+        if selectedIndexes.count > 0 {
+            self.deleteButton.setTitle( "Remove selected photos", forState: .Normal)
+        } else {
+            
+            self.deleteButton.setTitle("Reset the photos", forState: .Normal)
+        }
+    }
 }

@@ -341,6 +341,7 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         
     }
     
+    //MARK: Helper functions for the UI
     private func updateDeleteButton() {
         
         if selectedIndexes.count > 0 {

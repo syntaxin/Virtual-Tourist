@@ -23,6 +23,7 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
     var deletedIndexPaths: [NSIndexPath]!
     var updatedIndexPaths: [NSIndexPath]!
     
+    @IBOutlet weak var noImageLabel: UITextField!
     @IBOutlet weak var locationMapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var deleteButton: UIButton!
@@ -33,17 +34,17 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         
         selectedIndexes = [NSIndexPath]()
         locationMapView.delegate = self
-        
+        noImageLabel.hidden = true
         self.addLocation()
         
         updateDeleteButton()
-
+        
         
         do {
             try fetchedResultsController.performFetch()
         } catch {}
         collectionView.delegate = self
-
+        
         
         fetchedResultsController.delegate = self
         
@@ -60,14 +61,14 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
     
     //MARK: Delete actions
     @IBAction func deleteButtonClick(sender: AnyObject) {
-    
+        
         if selectedIndexes.count > 0 {
             deleteSelectedPhotos()
         } else {
             deleteAllPhotos()
-
+            
         }
-    
+        
     }
     
     private func deleteSelectedPhotos(){
@@ -102,12 +103,12 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         self.saveContext()
         
         getPhotosFromFlickr()
-
+        
     }
     
     //MARK: Get Photos from Flickr
     private func getPhotosFromFlickr (){
-    
+        
         FlickrClient.sharedInstance().getPhotosByLocation(location) { photoResults, errorString in
             
             if let error = errorString {
@@ -123,18 +124,25 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
                             
                         {
                             
-                            
-                            _ = photosInDictionary.map() { (dictionary: [String: AnyObject]) -> Photo in
-                                let photo = Photo(dictionary: dictionary, context: self.sharedContext)
-                                photo.location = self.location
-                                return photo
+                            if photosInDictionary.count == 0 {
+                                dispatch_async(dispatch_get_main_queue()){
+                                self.noImageLabel.hidden = false
+                                self.noImageLabel.text = "No images available for this location"
+                                }
                                 
+                            } else {
+                                _ = photosInDictionary.map() { (dictionary: [String: AnyObject]) -> Photo in
+                                    let photo = Photo(dictionary: dictionary, context: self.sharedContext)
+                                    photo.location = self.location
+                                    return photo
+                                    
+                                }
+                                
+                                dispatch_async(dispatch_get_main_queue()) {
+                                    self.collectionView.reloadData()
+                                }
                             }
-                            
-                            dispatch_async(dispatch_get_main_queue()) {
-                                self.collectionView.reloadData()
-                            }
-                            
+
                             self.saveContext()
                         } else {
                             
@@ -143,7 +151,7 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
                     }
                 )}
         }
-    
+        
     }
     
     
@@ -182,25 +190,25 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        
+        switch type {
             
-            switch type {
-            
-            case .Insert:
-                insertedIndexPaths.append(newIndexPath!)
-                break
-            case .Delete:
-                deletedIndexPaths.append(indexPath!)
-                break
-            case .Update:
-                updatedIndexPaths.append(indexPath!)
-                break
-            default:
-                break
-            }
+        case .Insert:
+            insertedIndexPaths.append(newIndexPath!)
+            break
+        case .Delete:
+            deletedIndexPaths.append(indexPath!)
+            break
+        case .Update:
+            updatedIndexPaths.append(indexPath!)
+            break
+        default:
+            break
+        }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-       
+        
         collectionView.performBatchUpdates ({() -> Void in
             
             for indexPath in self.insertedIndexPaths {
@@ -243,13 +251,13 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         if let index = selectedIndexes.indexOf(indexPath) {
             selectedIndexes.removeAtIndex(index)
             dispatch_async(dispatch_get_main_queue()){
-            cell.locationPhotoView.alpha = 1.0
+                cell.locationPhotoView.alpha = 1.0
             }
         } else {
             selectedIndexes.append(indexPath)
             
             dispatch_async(dispatch_get_main_queue()){
-            cell.locationPhotoView.alpha = 0.25
+                cell.locationPhotoView.alpha = 0.25
             }
         }
         
@@ -262,7 +270,7 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         var locationPhoto = UIImage(named: "photoPlaceholder")
         
         cell.locationPhotoView.image = nil
-       
+        
         if selectedIndexes.contains(indexPath) {
             cell.locationPhotoView.alpha = 0.25
         } else {
@@ -311,7 +319,7 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         
         pinView?.canShowCallout = false
         pinView?.pinTintColor = UIColor.blueColor()
-
+        
         
         return pinView
     }
@@ -330,7 +338,7 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
             
             
         }
-    
+        
     }
     
     private func updateDeleteButton() {

@@ -145,11 +145,18 @@
                                     <action selector="deleteButtonClick:" destination="1JN-dl-QuO" eventType="touchUpInside" id="MdN-qc-SW9"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Text" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MIb-X8-IZx">
+                                <rect key="frame" x="276" y="342" width="49" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Yde-A1-fxw" firstAttribute="top" secondItem="46W-0l-lVf" secondAttribute="bottom" id="1ga-D1-IPG"/>
+                            <constraint firstItem="MIb-X8-IZx" firstAttribute="centerY" secondItem="Yde-A1-fxw" secondAttribute="centerY" id="1qm-ss-RJx"/>
                             <constraint firstItem="qwd-6W-M9i" firstAttribute="width" secondItem="fgw-Da-5lE" secondAttribute="width" id="3aH-jN-U28"/>
+                            <constraint firstItem="MIb-X8-IZx" firstAttribute="centerX" secondItem="Yde-A1-fxw" secondAttribute="centerX" id="4GF-zN-2GS"/>
                             <constraint firstItem="qwd-6W-M9i" firstAttribute="top" secondItem="Yde-A1-fxw" secondAttribute="bottom" id="9Gl-gb-drl"/>
                             <constraint firstItem="46W-0l-lVf" firstAttribute="width" secondItem="fgw-Da-5lE" secondAttribute="width" id="9Jj-Hf-4Yv"/>
                             <constraint firstItem="Yde-A1-fxw" firstAttribute="width" secondItem="fgw-Da-5lE" secondAttribute="width" id="H0o-Go-px9"/>
@@ -165,6 +172,7 @@
                         <outlet property="collectionView" destination="Yde-A1-fxw" id="Czw-MD-eu1"/>
                         <outlet property="deleteButton" destination="qwd-6W-M9i" id="z7F-2x-gVP"/>
                         <outlet property="locationMapView" destination="46W-0l-lVf" id="1VD-7A-zn3"/>
+                        <outlet property="noImageLabel" destination="MIb-X8-IZx" id="1co-cg-uTw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wbC-aX-Xhx" userLabel="First Responder" sceneMemberID="firstResponder"/>

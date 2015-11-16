@@ -12,7 +12,6 @@ import MapKit
 
 class Location : NSManagedObject, MKAnnotation {
     
-    //managed variables
     @NSManaged var latitude: NSNumber
     @NSManaged var longitude: NSNumber
     @NSManaged var photos: [Photo]
@@ -21,20 +20,17 @@ class Location : NSManagedObject, MKAnnotation {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    //initializer
     init(latitude: Double, longitude: Double, context: NSManagedObjectContext){
 
         let entity = NSEntityDescription.entityForName("Location", inManagedObjectContext: context)
         
-        //super class init
         super.init(entity: entity!, insertIntoManagedObjectContext: context)
         
-        //set parameters, convert to NSNumbers to allow for an MSMangedObject
         self.latitude = NSNumber(double: latitude)
         self.longitude = NSNumber(double: longitude)
 
     }
-    // make this an Annotation as well
+
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude as Double, longitude: longitude as Double)
     }

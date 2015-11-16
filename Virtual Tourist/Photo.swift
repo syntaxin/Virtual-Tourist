@@ -23,15 +23,12 @@ class Photo: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
 }
 
-// initializer
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
 
         let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         
-        // superclass init
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
-        //set parameters of the photo object
         var farmString: String!
         
         if String(dictionary[FlickrClient.JSONResponseKeys.farmID]) != nil {

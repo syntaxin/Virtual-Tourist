@@ -13,7 +13,7 @@ import CoreData
 
 class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, MKMapViewDelegate, NSFetchedResultsControllerDelegate  {
     
-    // MARK: Prepare view and get Core Data
+    // MARK: Prepare view and get Core Data if it Exists
     
     var location: Location!
     
@@ -39,17 +39,11 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         updateDeleteButton()
 
         
-        
-        // Step 2: Perform the fetch
-        
         do {
             try fetchedResultsController.performFetch()
         } catch {}
         collectionView.delegate = self
 
-        
-        // Step 6: Set the delegate to this view controller
-        // Set the view controller as the delegate
         
         fetchedResultsController.delegate = self
         
@@ -137,7 +131,6 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
                                 
                             }
                             
-                            //Update the table on the main thread
                             dispatch_async(dispatch_get_main_queue()) {
                                 self.collectionView.reloadData()
                             }
@@ -276,8 +269,6 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
             cell.locationPhotoView.alpha = 1.0
         }
         
-        //Set the Location Photo Image
-        
         if  photo.imageLink == "" {
             locationPhoto = UIImage(named: "noImage")
             
@@ -288,7 +279,6 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
             
         else {
             
-            // Start the task that will eventually download the image
             let task = FlickrClient.sharedInstance().taskForImage(photo.imageLink) {imageData, error in
                 
                 if let error = error {
@@ -296,13 +286,9 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
                 }
                 
                 if let data = imageData {
-                    // Create the image
                     let photoImage = UIImage(data: data)
                     
-                    // update the image cache
                     photo.image = photoImage
-                    
-                    // update the cell later, on the main thread
                     
                     dispatch_async(dispatch_get_main_queue()) {
                         cell.locationPhotoView.image = photo.image
@@ -310,7 +296,6 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
                 }
             }
             
-            // This is the custom property on this cell. See TaskCancelingTableViewCell.swift for details.
             cell.taskToCancelifCellIsReused = task
         }
         

@@ -122,6 +122,7 @@ class FlickrClient : coreRestAPI {
         return task
     }
     
+    //MARK: Generate a random page to collect
     func getRandomPage(location:Location ,completionHandler:(result:Int!,errorString: String?) ->Void){
         
         let methodParams: [String:AnyObject] = [
@@ -163,7 +164,7 @@ class FlickrClient : coreRestAPI {
 
     }
     
-    // MARK: - Shared Image Cache stoled from Favorite Actors
+    // MARK: - Shared Image Cache stolen from Favorite Actors
     
     struct Caches {
         static let imageCache = ImageCache()

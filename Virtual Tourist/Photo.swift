@@ -44,11 +44,8 @@ class Photo: NSManagedObject {
         let serverString = dictionary[FlickrClient.JSONResponseKeys.serverID] as! String
         
         self.imageName = (dictionary[FlickrClient.JSONResponseKeys.photoID] as! String) + "_" + (dictionary[FlickrClient.JSONResponseKeys.secretID] as! String) + "_" + FlickrClient.Constants.photoSize + ".jpg"
-        //print(self.imageName)
         self.baseUrl = FlickrClient.imageURL.base + farmString + FlickrClient.imageURL.partTwo + serverString + "/"
-        //print(self.baseUrl)
         self.imageLink = (dictionary[FlickrClient.JSONResponseKeys.urlString] as! String)
-        //print(self.imageLink)
 
     }
 

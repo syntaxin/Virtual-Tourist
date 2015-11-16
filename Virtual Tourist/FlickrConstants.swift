@@ -16,13 +16,11 @@ extension FlickrClient {
         static let baseURL : String = "https://api.flickr.com/services/rest/"
 
         static let format = "json"
-        static let boundingBoxLongOffset = 0.5
-        static let boundingBoxLatOffset = 0.5
         static let latMin = -90.0
         static let latMax = 90.0
         static let longMin = -180.0
         static let longMax = 180.0
-        static let photosPerPage = 24
+        static let photosPerPage = 30
         static let nojsoncallback = 1
         static let photoSize = "q"
 

@@ -44,7 +44,6 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
         
         do {
             try fetchedResultsController.performFetch()
-            print (location.photos.count)
         } catch {}
         collectionView.delegate = self
 
@@ -131,7 +130,6 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
                         {
                             
                             
-                            //print(photosDictionary)
                             _ = photosInDictionary.map() { (dictionary: [String: AnyObject]) -> Photo in
                                 let photo = Photo(dictionary: dictionary, context: self.sharedContext)
                                 photo.location = self.location
@@ -301,9 +299,8 @@ class LocationAlbumViewController : UIViewController, UICollectionViewDelegate, 
                     // Create the image
                     let photoImage = UIImage(data: data)
                     
-                    // update the model, so that the infrmation gets cashed
+                    // update the image cache
                     photo.image = photoImage
-                    //print(photo.imageLink)
                     
                     // update the cell later, on the main thread
                     

@@ -18,7 +18,10 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
     @IBOutlet weak var editButton: UIBarButtonItem!
     var isEditMode = false
     var longPressGestureRecognizer: UILongPressGestureRecognizer!
-
+    
+    var currentView: SavedMapView!
+    var isFirstLoad = true
+    
     //MARK: Prepare view and get core data   
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +33,8 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
         editButton.title = "Edit"
         editButton.enabled = false
         
+        self.currentView = SavedMapView.unarchivedInstance()
+       
         let locations = fetchAllLocations()
         if !locations.isEmpty {
             
@@ -44,6 +49,12 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
         }
     }
     
+    override func viewDidAppear(animated: Bool) {
+        if currentView != nil {
+                self.touristMapView.region = self.currentView.currentView
+        }
+            isFirstLoad = false
+    }
     
     //MARK: CoreData Capabilities
     var sharedContext: NSManagedObjectContext {
@@ -88,16 +99,13 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
         let touchCoordinate = touristMapView.convertPoint(touchLocation, toCoordinateFromView:touristMapView)
         let location = Location(latitude: touchCoordinate.latitude, longitude: touchCoordinate.longitude, context: self.sharedContext)
 
-        print(location.latitude)
         editButton.enabled = true
         CoreDataStackManager.sharedInstance().saveContext()
         
         dispatch_async(dispatch_get_main_queue(), {
             self.touristMapView.addAnnotation(location)
         })
-        
-        
-        //TODO: Get Photos Up front
+
     }
         
     func deleteLocation(location: Location) {
@@ -106,12 +114,9 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
-// MARK: Manage the Editing of Locations
-    
+    // MARK: Manage the Editing of Locations
 
-    
     @IBAction func editLocations (sender: AnyObject) {
-        //print(isEditMode.boolValue)
         if isEditMode == false {
             self.isEditMode = true
             self.removeLongPressGestureRecognizer()
@@ -167,6 +172,18 @@ class TouristViewController: UIViewController, UIGestureRecognizerDelegate, MKMa
                 self.navigationController!.pushViewController(controller, animated: true)
             })
         }
+    }
+    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        if isFirstLoad{
+            return
+        }
+        
+        if(currentView == nil){
+            currentView = SavedMapView(region: mapView.region)
+        }
+        
+        currentView.currentView = mapView.region
+        currentView.save()
     }
 }
 

@@ -12,4 +12,15 @@ class LocationAlbumViewCell: UICollectionViewCell {
 
     @IBOutlet weak var locationPhotoView: UIImageView!
     
+    var imageName: String = ""
+    
+    var taskToCancelifCellIsReused: NSURLSessionTask? {
+        
+        didSet {
+            if let taskToCancel = oldValue {
+                taskToCancel.cancel()
+            }
+        }
+    }
+
 }

@@ -16,8 +16,8 @@ extension FlickrClient {
         static let baseURL : String = "https://api.flickr.com/services/rest/"
 
         static let format = "json"
-        static let boundingBoxLongOffset = 1.0
-        static let boundingBoxLatOffset = 1.0
+        static let boundingBoxLongOffset = 0.5
+        static let boundingBoxLatOffset = 0.5
         static let latMin = -90.0
         static let latMax = 90.0
         static let longMin = -180.0
@@ -43,7 +43,7 @@ extension FlickrClient {
         static let secretID = "secret"
         static let serverID = "server"
         static let title = "title"
-        
+        static let urlString = "url_q"
         
     }
     

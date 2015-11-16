@@ -13,9 +13,9 @@ import CoreData
 class Photo: NSManagedObject {
     
     
-    @NSManaged var imageName: String?
-    @NSManaged var baseUrl: String?
-    @NSManaged var imageLink: String?
+    @NSManaged var imageName: String
+    @NSManaged var baseUrl: String
+    @NSManaged var imageLink: String
     @NSManaged var location: Location?
 
 
@@ -32,30 +32,41 @@ class Photo: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         //set parameters of the photo object
-        self.imageName = (dictionary[FlickrClient.JSONResponseKeys.photoID] as! String?)! + "_" + (dictionary[FlickrClient.JSONResponseKeys.secretID] as! String?)! + "_" + FlickrClient.Constants.photoSize + ".jpg"
+        var farmString: String!
+        
+        if String(dictionary[FlickrClient.JSONResponseKeys.farmID]) != nil {
+            farmString = String(dictionary[FlickrClient.JSONResponseKeys.farmID])
+        } else
+        
+        {
+            farmString = "1"
+        }
+        let serverString = dictionary[FlickrClient.JSONResponseKeys.serverID] as! String
+        
+        self.imageName = (dictionary[FlickrClient.JSONResponseKeys.photoID] as! String) + "_" + (dictionary[FlickrClient.JSONResponseKeys.secretID] as! String) + "_" + FlickrClient.Constants.photoSize + ".jpg"
         //print(self.imageName)
-        self.baseUrl = FlickrClient.imageURL.base + String(dictionary[FlickrClient.JSONResponseKeys.farmID]) + FlickrClient.imageURL.partTwo + (dictionary[FlickrClient.JSONResponseKeys.serverID] as! String?)! + "/"
+        self.baseUrl = FlickrClient.imageURL.base + farmString + FlickrClient.imageURL.partTwo + serverString + "/"
         //print(self.baseUrl)
-        self.imageLink = self.baseUrl! + self.imageName!
+        self.imageLink = (dictionary[FlickrClient.JSONResponseKeys.urlString] as! String)
         //print(self.imageLink)
 
     }
 
     
-//    var image: UIImage? {
-//        
-//        get {
-//            return FlickrClient.Caches.imageCache.imageWithIdentifier(imageName)
-//        }
-//        
-//        set {
-//            FlickrClient.Caches.imageCache.storeImage(newValue, withIdentifier: imageName!)
-//        }
-//    }
-//    
-//    override func prepareForDeletion() {
-//        super.prepareForDeletion()
-//        image = nil
-//    }
+    var image: UIImage? {
+        
+        get {
+            return FlickrClient.Caches.imageCache.imageWithIdentifier(imageName)
+        }
+        
+        set {
+            FlickrClient.Caches.imageCache.storeImage(newValue, withIdentifier: imageName)
+        }
+    }
+    
+    override func prepareForDeletion() {
+        super.prepareForDeletion()
+        image = nil
+    }
 }
 
